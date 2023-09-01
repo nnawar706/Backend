@@ -1,10 +1,11 @@
-from rest_frameworks import APIView, permissions, status
+from rest_framework.views import APIView
+from rest_framework import permissions, status
 from django.http import JsonResponse
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
-class RegisterView(APIView):
+class UserRegistrationView(APIView):
     def post(self, request):
         data = request.data
 
@@ -17,6 +18,7 @@ class RegisterView(APIView):
         return JsonResponse({
             'status': True
         }, status = status.HTTP_201_CREATED)
+
 
 class RetrieveUsersView(APIView):
     permission_classes = [permissions.IsAuthenticated]
