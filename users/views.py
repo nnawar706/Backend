@@ -27,7 +27,12 @@ class RetrieveUsersView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
-        pass
+        user = UserSerializer(request.user)
+
+        return JsonResponse({
+            'status': True,
+            'data': user.data
+        }, status = 200)
 
 
 def validation_error(errors):
