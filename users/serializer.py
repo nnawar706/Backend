@@ -6,9 +6,10 @@ from django.core import exceptions
 User = get_user_model()
 
 class UserCreateSerializer (serializers.ModelSerializer):
+
     class Meta:
         model = User
-        fields = ['id', 'name', 'email', 'password']
+        fields = ['id', 'name', 'email', 'password', 'role']
 
     def validate(self, data):
         name = data['name']

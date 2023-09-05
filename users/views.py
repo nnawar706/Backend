@@ -12,7 +12,7 @@ class UserRegistrationView(APIView):
         if not serializer.is_valid():
             return JsonResponse({
                 'status': False,
-                'errors': validation_error(serializer.errors)
+                'errors': serializer.errors
             }, status = 422)
 
         user = serializer.create(serializer.validated_data)

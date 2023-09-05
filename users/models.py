@@ -36,6 +36,13 @@ class User(AbstractBaseUser, PermissionsMixin):
     name       = models.CharField(max_length=150)
     is_active  = models.BooleanField(default=True)
     is_staff   = models.BooleanField(default=False)
+    role       = models.PositiveSmallIntegerField(
+                    choices = (
+                                (1, 'Admin'),
+                                (2, 'Teacher'),
+                                (3, 'Student')
+                              ), blank=False, null=False
+                 )
     created_at = models.DateTimeField(auto_now_add=True)
     deleted_at = models.DateTimeField(auto_now=False, null=True, blank=True)
 
