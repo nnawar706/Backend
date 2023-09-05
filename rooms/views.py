@@ -4,7 +4,7 @@ from rest_framework import permissions
 from .serializer import *
 from .models import ExamRoom
 
-class RetrieveRoomsView(APIView):
+class ExamRoomsView(APIView):
     permission_classes = [permissions.IsAuthenticated]
     def get(self, request):
         data = ExamRoom.objects.all()
