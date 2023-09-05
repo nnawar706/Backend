@@ -6,8 +6,9 @@ from .models import ExamRoom
 
 class ExamRoomsView(APIView):
     permission_classes = [permissions.IsAuthenticated]
+
     def get(self, request):
-        data = ExamRoom.objects.all()
+        data = ExamRoom.objects.filter(user = request.user)
 
         serializer = ExamRoomSerializer(data, many=True)
 
@@ -15,3 +16,8 @@ class ExamRoomsView(APIView):
             'status': True,
             'data': serializer.data
         }, status = 204 if len(serializer.data) == 0 else 200)
+
+    def post(self, request):
+        data = request.data
+
+        serializer = UserCreateSerializer(data = data)
