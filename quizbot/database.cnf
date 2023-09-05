@@ -1,0 +1,4 @@
+database = quizbot
+user = root
+password = selopia
+default-character-set = utf8
