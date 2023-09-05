@@ -14,4 +14,4 @@ class RetrieveRoomsView(APIView):
         return JsonResponse({
             'status': True,
             'data': serializer.data
-        }, status = 200)
+        }, status = 204 if len(serializer.data) == 0 else 200)
