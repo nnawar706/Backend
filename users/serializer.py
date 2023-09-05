@@ -16,7 +16,7 @@ class UserCreateSerializer (serializers.ModelSerializer):
 
         if len(name) < 5:
             raise serializers.ValidationError('Name field must be at least 5 characters long.')
-        
+#
         try:
             validate_password(data['password'])
         except exceptions.ValidationError as e:
