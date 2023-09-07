@@ -1,11 +1,12 @@
 from django.http import JsonResponse
 from rest_framework.views import APIView
 from rest_framework import permissions
+from .permissions import *
 from .serializer import *
 from .models import ExamRoom
 
 class ExamRoomsView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsUser]
 
     def get(self, request):
         data = ExamRoom.objects.filter(user = request.user)

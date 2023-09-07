@@ -28,7 +28,8 @@ class UserCreateSerializer (serializers.ModelSerializer):
         user = User.objects.create_user(
             name = data['name'],
             email = data['email'],
-            password = data['password']
+            password = data['password'],
+            role = data['role']
         )
 
         return user
