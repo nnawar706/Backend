@@ -6,7 +6,7 @@ from .serializer import *
 from .models import ExamRoom
 
 class ExamRoomsView(APIView):
-    permission_classes = [permissions.IsAuthenticated, IsUser]
+    permission_classes = [permissions.IsAuthenticated, IsTeacher]
 
     def get(self, request):
         data = ExamRoom.objects.filter(user = request.user)
@@ -21,4 +21,21 @@ class ExamRoomsView(APIView):
     def post(self, request):
         data = request.data
 
-        serializer = UserCreateSerializer(data = data)
+        serializer = ExamRoomSerializer(data = data)
+
+        if not serializer.is_valid():
+            return JsonResponse({
+                'status': False,
+                'errors': validation_error(serializer.errors)
+            }, status = 422)
+
+        room = serializer.create(serializer.validated_data)
+
+        return JsonResponse({
+            'status': True,
+        }, status = 201)
+
+
+def validation_error(errors):
+    error_field = next(iter(errors))
+    return errors[error_field][0]
