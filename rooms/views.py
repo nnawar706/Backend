@@ -10,7 +10,7 @@ class ExamRoomsView(APIView):
     permission_classes = [permissions.IsAuthenticated, IsTeacher]
 
     def get(self, request):
-        data = ExamRoom.objects.filter(user = request.user)
+        data = ExamRoom.objects.filter(user = request.user).order_by('-created_at')
 
         serializer = ExamRoomSerializer(data, many=True)
 
@@ -22,7 +22,7 @@ class ExamRoomsView(APIView):
     def post(self, request):
         data = request.data
 
-        serializer = ExamRoomSerializer(data = data)
+        serializer = ExamRoomCreateSerializer(data = data, context={'request': request})
 
         if not serializer.is_valid():
             return JsonResponse({
@@ -34,6 +34,7 @@ class ExamRoomsView(APIView):
 
         return JsonResponse({
             'status': True,
+#             'data': data.data
         }, status = status.HTTP_201_CREATED)
 
 

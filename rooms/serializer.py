@@ -1,30 +1,40 @@
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 from .models import ExamRoom
-import hashlib
-import uuid
+import secrets
+import string
 
 class ExamRoomCreateSerializer (serializers.ModelSerializer):
 
     class Meta:
         model = ExamRoom
-        fields = ['title', 'detail', 'secret']
+        fields = ['title', 'detail']
+
+    def __init__(self, *args, **kwargs):
+        context = kwargs.pop('context', {})
+        self.request = context.get('request')
+        super().__init__(*args, **kwargs)
 
     def validate(self, data):
+        existing_room = ExamRoom.objects.filter(user=self.request.user, title=data['title']).first()
+
+        if existing_room:
+            raise serializers.ValidationError('A room with the same title already exists.')
+
         if len(data['title']) < 5:
             raise serializers.ValidationError('Title field must be at least 5 characters long.')
 
         return data
 
     def create(self, data):
-        user = request.user
-
         room = ExamRoom(
-            user    = user,
+            user    = self.request.user,
             title   = data['title'],
             detail  = data['detail'],
-            secret  = generate_token(data['secret'])
+            secret  = generate_code(8)
         )
+
+        room.save()
 
         return room
 
@@ -36,7 +46,10 @@ class ExamRoomSerializer (serializers.ModelSerializer):
         exclude = ['secret']
 
 
-def generate_token(code):
-    salt = uuid.uuid4().hex
-    secret = hashlib.sha256(salt.encode() + code.encode()).hexdigest() + ':' + salt
-    return secret
+def generate_code(length=8):
+    characters = string.digits
+
+    # Generate a random string of the specified length
+    random_string = ''.join(secrets.choice(characters) for _ in range(length))
+
+    return random_string
