@@ -1,5 +1,6 @@
 from django.http import JsonResponse
 from rest_framework.views import APIView
+from rest_framework import status
 from rest_framework import permissions
 from .permissions import *
 from .serializer import *
@@ -26,14 +27,14 @@ class ExamRoomsView(APIView):
         if not serializer.is_valid():
             return JsonResponse({
                 'status': False,
-                'errors': validation_error(serializer.errors)
-            }, status = 422)
+                'errors': serializer.errors
+            }, status = status.HTTP_422_UNPROCESSABLE_ENTITY)
 
         room = serializer.create(serializer.validated_data)
 
         return JsonResponse({
             'status': True,
-        }, status = 201)
+        }, status = status.HTTP_201_CREATED)
 
 
 def validation_error(errors):
