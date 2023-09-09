@@ -38,4 +38,5 @@ class ExamRoomSerializer (serializers.ModelSerializer):
 
 def generate_token(code):
     salt = uuid.uuid4().hex
-    return hashlib.sha256(salt.encode() + code.encode()).hexdigest() + ':' + salt
+    secret = hashlib.sha256(salt.encode() + code.encode()).hexdigest() + ':' + salt
+    return secret
