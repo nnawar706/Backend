@@ -3,7 +3,5 @@ from .views import *
 
 urlpatterns = [
     path("", ExamRoomsView.as_view()),
-    path("", ExamRoomsView.as_view()),
-#     path("update", .as_view()),
-#     path("delete", .as_view())
+    path("<int:pk>", .as_view())
 ]
