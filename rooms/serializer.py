@@ -2,12 +2,13 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 from .models import ExamRoom
 import hashlib
+import uuid
 
 class ExamRoomCreateSerializer (serializers.ModelSerializer):
 
     class Meta:
         model = ExamRoom
-        fields = ['user', 'title', 'detail', 'secret']
+        fields = ['title', 'detail', 'secret']
 
     def validate(self, data):
         if len(data['title']) < 5:
@@ -16,8 +17,10 @@ class ExamRoomCreateSerializer (serializers.ModelSerializer):
         return data
 
     def create(self, data):
+        user = request.user
+
         room = ExamRoom(
-            user    = request.user,
+            user    = user,
             title   = data['title'],
             detail  = data['detail'],
             secret  = generate_token(data['secret'])

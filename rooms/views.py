@@ -27,7 +27,7 @@ class ExamRoomsView(APIView):
         if not serializer.is_valid():
             return JsonResponse({
                 'status': False,
-                'errors': serializer.errors
+                'errors': validation_error(serializer.errors)
             }, status = status.HTTP_422_UNPROCESSABLE_ENTITY)
 
         room = serializer.create(serializer.validated_data)
