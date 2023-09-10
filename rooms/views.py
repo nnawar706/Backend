@@ -34,7 +34,6 @@ class ExamRoomsView(APIView):
 
         return JsonResponse({
             'status': True,
-#             'data': data.data
         }, status = status.HTTP_201_CREATED)
 
 
