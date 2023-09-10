@@ -1,6 +1,8 @@
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 from .models import ExamRoom
+from quizzes.models import Quiz
+from datetime import date
 import secrets
 import string
 
@@ -69,6 +71,22 @@ class ExamRoomUpdateSerializer (serializers.ModelSerializer):
         instance.detail = data.get('detail', instance.detail)
         instance.save()
         return instance
+
+
+class ExamRoomActiveStatusSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ExamRoom
+        fields = ['title','status']
+
+    def validate(self, data):
+        instance = self.instance
+        is_active = data.get('status', instance.status)
+
+        if not is_active:
+            if Quiz.objects.filter(room=instance, occuring_date__gt=date.today()).exists():
+                raise serializers.ValidationError('Cannot archive exam room that has upcoming quizzes.')
+        
+        return data
 
 
 def generate_code (length=8):

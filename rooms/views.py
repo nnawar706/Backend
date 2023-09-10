@@ -89,6 +89,23 @@ class RetrieveExamRoomView(APIView):
             'status': True,
         }, status = status.HTTP_200_OK)
 
+    def patch(self, request, pk):
+        try:
+            room = ExamRoom.objects.get(pk=pk)
+        except ExamRoom.DoesNotExist:
+            return JsonResponse({
+                'status': False,
+                'error': 'Room does not exist.'
+            }, status = status.HTTP_404_NOT_FOUND)
+
+        serializer = ExamRoomActiveStatusSerializer(instance = room)
+
+        if not serializer.is_valid():
+            return JsonResponse({
+                'status': False,
+                'error': validation_error(serializer.errors)
+            }, status = status.HTTP_422_UNPROCESSABLE_ENTITY)
+
 
 def validation_error(errors):
     error_field = next(iter(errors))
