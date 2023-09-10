@@ -10,14 +10,32 @@ class ExamRoomsView(APIView):
     permission_classes = [permissions.IsAuthenticated, IsTeacher]
 
     def get(self, request):
-        data = ExamRoom.objects.filter(user = request.user).order_by('-created_at')
+        if request.query_params:
+            data = ExamRoom.objects.filter(user = request.user, **request.query_params.dict()).order_by('-created_at')
+        else:
+            data = ExamRoom.objects.filter(user = request.user).order_by('-created_at')
 
         serializer = ExamRoomSerializer(data, many=True)
 
         return JsonResponse({
             'status': True,
             'data': serializer.data
-        }, status = 204 if len(serializer.data) == 0 else 200)
+        }, status = status.HTTP_204_NO_CONTENT if len(serializer.data) == 0 else status.HTTP_200_OK)
+
+    def get(self, request, pk):
+        try:
+            room = ExamRoom.objects.get(pk=pk)
+
+            if room.user != request.user:
+                return JsonResponse({
+                    'status': False,
+                    'error': 'You are not allowed to access the data.'
+                }, status = status.HTTP_403_FORBIDDEN)
+        except ExamRoom.DoesNotExist:
+           return JsonResponse({
+               'status': False,
+               'error': 'Room does not exist.'
+           }, status = status.HTTP_404_NOT_FOUND)
 
     def post(self, request):
         data = request.data
@@ -27,7 +45,7 @@ class ExamRoomsView(APIView):
         if not serializer.is_valid():
             return JsonResponse({
                 'status': False,
-                'errors': validation_error(serializer.errors)
+                'error': validation_error(serializer.errors)
             }, status = status.HTTP_422_UNPROCESSABLE_ENTITY)
 
         room = serializer.create(serializer.validated_data)
@@ -35,6 +53,30 @@ class ExamRoomsView(APIView):
         return JsonResponse({
             'status': True,
         }, status = status.HTTP_201_CREATED)
+
+    def put(self, request, pk):
+        try:
+            room = ExamRoom.objects.get(pk=pk)
+        except ExamRoom.DoesNotExist:
+            return JsonResponse({
+                'status': False,
+                'error': 'Room does not exist.'
+            }, status = status.HTTP_404_NOT_FOUND)
+
+        data = request.data
+        serializer = ExamRoomUpdateSerializer(instance = room, data = data)
+
+        if not serializer.is_valid():
+            return JsonResponse({
+                'status': False,
+                'error': validation_error(serializer.errors)
+            }, status = status.HTTP_422_UNPROCESSABLE_ENTITY)
+
+        room = serializer.update(instance = room, data = serializer.validated_data)
+
+        return JsonResponse({
+            'status': True,
+        }, status = status.HTTP_200_OK)
 
 
 def validation_error(errors):

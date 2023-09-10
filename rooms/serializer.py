@@ -15,7 +15,7 @@ class ExamRoomCreateSerializer (serializers.ModelSerializer):
         self.request = context.get('request')
         super().__init__(*args, **kwargs)
 
-    def validate(self, data):
+    def validate (self, data):
         existing_room = ExamRoom.objects.filter(user=self.request.user, title=data['title']).first()
 
         if existing_room:
@@ -26,7 +26,7 @@ class ExamRoomCreateSerializer (serializers.ModelSerializer):
 
         return data
 
-    def create(self, data):
+    def create (self, data):
         room = ExamRoom(
             user    = self.request.user,
             title   = data['title'],
@@ -43,13 +43,36 @@ class ExamRoomSerializer (serializers.ModelSerializer):
 
     class Meta:
         model = ExamRoom
-        exclude = ['secret']
+        exclude = ['user','secret']
 
 
-def generate_code(length=8):
+class ExamRoomUpdateSerializer (serializers.ModelSerializer):
+
+    class Meta:
+        model = ExamRoom
+        exclude = ['user','secret','created_at']
+
+    def validate (self, data):
+        instance = self.instance
+        if 'title' in data and len(data['title']) < 5:
+            raise serializers.ValidationError('Title field must be at least 5 characters long.')
+
+        if 'title' in data and data['title'] != instance.title:
+            existing_room = ExamRoom.objects.filter(user=instance.user, title=data['title']).first()
+            if existing_room:
+                raise serializers.ValidationError('A room with the same title already exists.')
+
+        return data
+
+    def update (self, instance, data):
+        instance.title = data.get('title', instance.title)
+        instance.detail = data.get('detail', instance.detail)
+        instance.save()
+        return instance
+
+
+def generate_code (length=8):
     characters = string.digits
-
-    # Generate a random string of the specified length
     random_string = ''.join(secrets.choice(characters) for _ in range(length))
 
     return random_string
