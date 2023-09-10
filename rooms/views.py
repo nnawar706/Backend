@@ -24,9 +24,9 @@ class ExamRoomsView(APIView):
 
     def get(self, request, pk):
         try:
-            room = ExamRoom.objects.get(pk=pk)
+            data = ExamRoom.objects.get(pk=pk)
 
-            if room.user != request.user:
+            if data.user != request.user:
                 return JsonResponse({
                     'status': False,
                     'error': 'You are not allowed to access the data.'
@@ -36,6 +36,13 @@ class ExamRoomsView(APIView):
                'status': False,
                'error': 'Room does not exist.'
            }, status = status.HTTP_404_NOT_FOUND)
+
+        serializer = ExamRoomSerializer(data, many=False)
+
+        return JsonResponse({
+            'status': True,
+            'data': serializer.data
+        }, status=status.HTTP_200_OK)
 
     def post(self, request):
         data = request.data
