@@ -1,3 +1,17 @@
 from django.db import models
+from rooms.models import ExamRoom
 
-# Create your models here.
+class Quiz(models.Model):
+    room            = models.ForeignKey(ExamRoom, on_delete=models.CASCADE)
+    title           = models.CharField(max_length=50)
+    occuring_date   = models.DateField()
+    from_time       = models.TimeField()
+    to_time         = models.TimeField()
+    total_marks     = models.IntegerField()
+    created_at      = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('room', 'title')
+
+    def __str__(self):
+        return self.room.title + ' - ' + self.title
