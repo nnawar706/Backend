@@ -113,6 +113,44 @@ class RetrieveExamRoomView(APIView):
         }, status = status.HTTP_200_OK)
 
 
+class SendJoiningInvitationView(APIView):
+    permission_classes = [permissions.IsAuthenticated, IsTeacher]
+
+    def post (self, request, pk):
+        try:
+            room = ExamRoom.objects.get(pk=pk)
+
+            if room.user != request.user:
+                return JsonResponse({
+                    'status': False,
+                    'error': 'You are not allowed to perform this task.'
+                }, status = status.HTTP_403_FORBIDDEN)
+            if not room.status:
+                return JsonResponse({
+                    'status': False,
+                    'error': 'Cannot invite students to an archived exam room.'
+                }, status = status.HTTP_400_BAD_REQUEST)
+        except ExamRoom.DoesNotExist:
+            return JsonResponse({
+                'status': False,
+                'error': 'Room does not exist.'
+            }, status = status.HTTP_404_NOT_FOUND)
+
+        data = request.data
+
+        serializer = ExamRoomInvitationSerializer(data = data)
+
+        if not serializer.is_valid():
+            return JsonResponse({
+                'status': False,
+                'error': validation_error(serializer.errors)
+            }, status = status.HTTP_422_UNPROCESSABLE_ENTITY)
+
+        return JsonResponse({
+            'status': True,
+        }, status = status.HTTP_200_OK)
+
+
 def validation_error(errors):
     error_field = next(iter(errors))
     return errors[error_field][0]

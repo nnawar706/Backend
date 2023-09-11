@@ -93,6 +93,10 @@ class ExamRoomActiveStatusSerializer(serializers.ModelSerializer):
         instance.save()
 
 
+class ExamRoomInvitationSerializer(serializers.Serializer):
+    emails = serializers.ListField(child = serializers.EmailField())
+
+
 def generate_code (length=8):
     characters = string.digits
     random_string = ''.join(secrets.choice(characters) for _ in range(length))
