@@ -98,7 +98,7 @@ class ExamRoomActiveStatusSerializer(serializers.ModelSerializer):
 class ExamRoomInvitationSerializer(serializers.Serializer):
     emails = serializers.ListField(child = serializers.EmailField())
 
-    def send_invitation (secret, data):
+    def send_invitation (self, secret, data):
         subject = 'Invitation From QUIZBOT'
         message = f'Hi, you have been invited to join an exam room on QUIZBOT. Please use {secret} to access the room.'
         email_from = settings.EMAIL_HOST_USER
