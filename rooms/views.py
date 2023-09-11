@@ -146,6 +146,8 @@ class SendJoiningInvitationView(APIView):
                 'error': validation_error(serializer.errors)
             }, status = status.HTTP_422_UNPROCESSABLE_ENTITY)
 
+        serializer.send_invitation(secret = room.secret, data = serializer.validated_data)
+
         return JsonResponse({
             'status': True,
         }, status = status.HTTP_200_OK)
