@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 
 from pathlib import Path
 from datetime import timedelta
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -60,7 +61,7 @@ ROOT_URLCONF = "quizbot.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": ['templates'],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -74,11 +75,12 @@ TEMPLATES = [
 ]
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'sandbox.smtp.mailtrap.io'
+EMAIL_HOST = config('EMAIL_HOST')
 EMAIL_USE_TLS = True
-EMAIL_PORT = 2525
-EMAIL_HOST_USER = ${{ secrets.MAILTRAP_USER }}
-EMAIL_HOST_PASSWORD = ${{ secrets.MAILTRAP_PASSWORD }}
+EMAIL_PORT = config('EMAIL_PORT')
+EMAIL_HOST_USER = config('EMAIL_USER')
+EMAIL_FROM_USER = config('EMAIL_FROM_USER')
+EMAIL_HOST_PASSWORD = config('EMAIL_PASSWORD')
 
 
 WSGI_APPLICATION = "quizbot.wsgi.application"
@@ -97,11 +99,11 @@ WSGI_APPLICATION = "quizbot.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
-        "NAME": "quizbot",
-        "USER": "root",
-        "PASSWORD": "selopia",
-        "HOST": "localhost",
-        "PORT": "3306",
+        "NAME": config('DB_NAME'),
+        "USER": config('DB_USER'),
+        "PASSWORD": config('DB_PASSWORD'),
+        "HOST": config('DB_HOST'),
+        "PORT": config('DB_PORT'),
         "OPTIONS": {
             "init_command": "SET sql_mode='STRICT_TRANS_TABLES'"
         }

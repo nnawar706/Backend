@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from django.conf import settings
-from django.core.mail import send_mail
+from django.core.mail import EmailMessage
+from django.template.loader import render_to_string
 from rest_framework.validators import UniqueTogetherValidator
 from .models import ExamRoom
 from quizzes.models import Quiz
@@ -99,11 +100,14 @@ class ExamRoomInvitationSerializer(serializers.Serializer):
     emails = serializers.ListField(child = serializers.EmailField())
 
     def send_invitation (self, secret, data):
+        mail_template = 'invitation.html'
+        mail_message = render_to_string(mail_template, context = {'secret': secret})
         subject = 'Invitation From QUIZBOT'
-        message = f'Hi, you have been invited to join an exam room on QUIZBOT. Please use {secret} to access the room.'
-        email_from = settings.EMAIL_HOST_USER
+        email_from = settings.EMAIL_FROM_USER
         recipient_list = data['emails']
-        send_mail( subject, message, email_from, recipient_list)
+        mail = EmailMessage(subject, mail_message, email_from, recipient_list)
+        mail.content_subtype = 'html'
+        mail.send()
 
 
 def generate_code (length=8):
