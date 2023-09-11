@@ -77,8 +77,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'sandbox.smtp.mailtrap.io'
 EMAIL_USE_TLS = True
 EMAIL_PORT = 2525
-EMAIL_HOST_USER = 'b9e3456ed1b5bd'
-EMAIL_HOST_PASSWORD = '152bf1a03e9ae7v'
+EMAIL_HOST_USER = ${{ secrets.MAILTRAP_USER }}
+EMAIL_HOST_PASSWORD = ${{ secrets.MAILTRAP_PASSWORD }}
 
 
 WSGI_APPLICATION = "quizbot.wsgi.application"
