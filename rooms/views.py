@@ -98,13 +98,19 @@ class RetrieveExamRoomView(APIView):
                 'error': 'Room does not exist.'
             }, status = status.HTTP_404_NOT_FOUND)
 
-        serializer = ExamRoomActiveStatusSerializer(instance = room)
+        serializer = ExamRoomActiveStatusSerializer(instance = room, data = request.data)
 
         if not serializer.is_valid():
             return JsonResponse({
                 'status': False,
                 'error': validation_error(serializer.errors)
             }, status = status.HTTP_422_UNPROCESSABLE_ENTITY)
+
+        room = serializer.change_status(instance = room, data = serializer.validated_data)
+
+        return JsonResponse({
+            'status': True,
+        }, status = status.HTTP_200_OK)
 
 
 def validation_error(errors):

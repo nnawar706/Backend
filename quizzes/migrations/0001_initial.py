@@ -26,7 +26,7 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 ("title", models.CharField(max_length=50)),
-                ("occuring_date", models.DateField()),
+                ("occurring_date", models.DateField()),
                 ("from_time", models.TimeField()),
                 ("to_time", models.TimeField()),
                 ("total_marks", models.IntegerField()),

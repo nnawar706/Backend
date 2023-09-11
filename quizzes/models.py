@@ -4,7 +4,7 @@ from rooms.models import ExamRoom
 class Quiz(models.Model):
     room            = models.ForeignKey(ExamRoom, on_delete=models.CASCADE)
     title           = models.CharField(max_length=50)
-    occuring_date   = models.DateField()
+    occurring_date   = models.DateField()
     from_time       = models.TimeField()
     to_time         = models.TimeField()
     total_marks     = models.IntegerField()

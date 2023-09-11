@@ -76,17 +76,21 @@ class ExamRoomUpdateSerializer (serializers.ModelSerializer):
 class ExamRoomActiveStatusSerializer(serializers.ModelSerializer):
     class Meta:
         model = ExamRoom
-        fields = ['title','status']
+        fields = ['status']
 
     def validate(self, data):
         instance = self.instance
         is_active = data.get('status', instance.status)
 
         if not is_active:
-            if Quiz.objects.filter(room=instance, occuring_date__gt=date.today()).exists():
+            if Quiz.objects.filter(room=instance, occurring_date__gt=date.today()).exists():
                 raise serializers.ValidationError('Cannot archive exam room that has upcoming quizzes.')
         
         return data
+
+    def change_status (self, instance, data):
+        instance.status = not instance.status
+        instance.save()
 
 
 def generate_code (length=8):
