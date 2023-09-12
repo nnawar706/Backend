@@ -3,7 +3,7 @@ from django.conf import settings
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 from rest_framework.validators import UniqueTogetherValidator
-from .models import ExamRoom
+from .models import ExamRoom, ExamRoomHasStudents
 from quizzes.models import Quiz
 from datetime import date
 import secrets
@@ -99,6 +99,28 @@ class ExamRoomActiveStatusSerializer(serializers.ModelSerializer):
 class ExamRoomJoinSerializer(serializers.ModelSerializer):
     class Meta:
         model = ExamRoom
+        fields = ['secret']
+
+    def __init__(self, *args, **kwargs):
+        context = kwargs.pop('context', {})
+        self.request = context.get('request')
+        super().__init__(*args, **kwargs)
+
+    def validate (self, data):
+        room = ExamRoom.objects.filter(secret=data['secret'], status = 1).first()
+
+        if not room:
+            raise serializers.ValidationError('No active classroom is available with given secret.')
+
+        if room.students.filter(id = self.request.user.id).exists():
+            raise serializers.ValidationError('You have already joined the classroom that is associated with the given secret.')
+
+        return data
+
+    def join_room (self, data):
+        room = ExamRoom.objects.filter(secret=data['secret']).first()
+        room.students.add(self.request.user)
+        return data
 
 
 class ExamRoomInvitationSerializer(serializers.Serializer):

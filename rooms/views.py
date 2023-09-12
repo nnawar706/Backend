@@ -159,7 +159,7 @@ class JoinExamRoomView(APIView):
     def post(self, request):
         data = request.data
 
-        serializer = ExamRoomCreateSerializer(data = data, context={'request': request})
+        serializer = ExamRoomJoinSerializer(data = data, context={'request': request})
 
         if not serializer.is_valid():
             return JsonResponse({
@@ -167,7 +167,7 @@ class JoinExamRoomView(APIView):
                 'error': validation_error(serializer.errors)
             }, status = status.HTTP_422_UNPROCESSABLE_ENTITY)
 
-        room = serializer.create(serializer.validated_data)
+        joined = serializer.join_room(serializer.validated_data)
 
         return JsonResponse({
             'status': True,
