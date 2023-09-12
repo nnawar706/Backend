@@ -96,6 +96,11 @@ class ExamRoomActiveStatusSerializer(serializers.ModelSerializer):
         instance.save()
 
 
+class ExamRoomJoinSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ExamRoom
+
+
 class ExamRoomInvitationSerializer(serializers.Serializer):
     emails = serializers.ListField(child = serializers.EmailField())
 

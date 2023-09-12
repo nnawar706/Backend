@@ -154,7 +154,7 @@ REST_FRAMEWORK = {
 
 SIMPLE_JWT = {
     'REFRESH_TOKEN_LIFETIME': timedelta(days=15),
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=45),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=450),
     'ROTATE_REFRESH_TOKENS': True,
     'AUTH_REFRESH_COOKIE': 'user_refresh_token',
     'AUTH_COOKIE_SECURE': True,

@@ -153,6 +153,27 @@ class SendJoiningInvitationView(APIView):
         }, status = status.HTTP_200_OK)
 
 
+class JoinExamRoomView(APIView):
+    permission_classes = [permissions.IsAuthenticated, IsStudent]
+
+    def post(self, request):
+        data = request.data
+
+        serializer = ExamRoomCreateSerializer(data = data, context={'request': request})
+
+        if not serializer.is_valid():
+            return JsonResponse({
+                'status': False,
+                'error': validation_error(serializer.errors)
+            }, status = status.HTTP_422_UNPROCESSABLE_ENTITY)
+
+        room = serializer.create(serializer.validated_data)
+
+        return JsonResponse({
+            'status': True,
+        }, status = status.HTTP_201_CREATED)
+
+
 def validation_error(errors):
     error_field = next(iter(errors))
     return errors[error_field][0]
