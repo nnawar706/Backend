@@ -58,7 +58,7 @@ class RetrieveExamRoomView(APIView):
                 'error': 'Room does not exist.'
             }, status = status.HTTP_404_NOT_FOUND)
 
-        serializer = ExamRoomSerializer(data, many=False)
+        serializer = ExamRoomSerializer(data, context={'request': request, 'fetch_fields': ['name', 'email']})
 
         return JsonResponse({
             'status': True,

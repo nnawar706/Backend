@@ -4,6 +4,7 @@ from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 from rest_framework.validators import UniqueTogetherValidator
 from .models import ExamRoom, ExamRoomHasStudents
+from users.serializer import AccessUserSerializer
 from quizzes.models import Quiz
 from datetime import date
 import secrets
@@ -45,11 +46,10 @@ class ExamRoomCreateSerializer (serializers.ModelSerializer):
 
 
 class ExamRoomSerializer (serializers.ModelSerializer):
-
+    students = AccessUserSerializer(many = True, read_only = True)
     class Meta:
         model = ExamRoom
         exclude = ['user','secret']
-
 
 class ExamRoomUpdateSerializer (serializers.ModelSerializer):
 
