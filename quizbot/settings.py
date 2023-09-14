@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     "corsheaders",
     "users",
     "rooms",
-    "quizzes"
+    "quizzes",
+    "questions"
 ]
 
 MIDDLEWARE = [
