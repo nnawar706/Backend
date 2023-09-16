@@ -18,8 +18,8 @@ from decouple import config
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
+TIME_ZONE = 'Asia/Dhaka'
+USE_TZ = True
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = "django-insecure-cfikl6!4kz9q25yxb8_n_iiho6$8--#_2u1n6gtojdesp5m_=l"

@@ -3,6 +3,7 @@ from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework import permissions
 from quizzes.models import Quiz
+from django.utils import timezone
 from .serializer import *
 from .permissions import *
 
@@ -21,13 +22,13 @@ class QuestionCreateView (APIView):
                 'error': serializer.errors
             }, status = status.HTTP_422_UNPROCESSABLE_ENTITY)
 
-#         try:
-#             question = serializer.create(serializer.validated_data)
-#         except Exception as e:
-#             return JsonResponse({
-#                 'status': False,
-#                 'error': str(e)
-#             }, status = status.HTTP_500_INTERNAL_SERVER_ERROR)
+        try:
+            question = serializer.create(serializer.validated_data)
+        except Exception as e:
+            return JsonResponse({
+                'status': False,
+                'error': str(e)
+            }, status = status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         return JsonResponse({'status': True}, status = status.HTTP_201_CREATED)
 
@@ -50,7 +51,18 @@ class QuestionView (APIView):
                 'error': 'You are not allowed to access this data.'
             }, status=status.HTTP_403_FORBIDDEN)
 
-        serializer = RetrieveQuestionModelSerializer(list(quiz.questions.all()), many=True)
+        if request.user.role == 3 and (quiz.occurring_date > timezone.now().date() or (quiz.occurring_date == timezone.now().date() and timezone.now().time() < quiz.from_time)):
+            return JsonResponse({
+                'status': False,
+                'error': 'You are not allowed to access this before ' + str(quiz.occurring_date.strftime('%d-%m-%Y')) + ' ' + str(quiz.from_time.strftime('%H:%M')) + '.'
+            }, status=status.HTTP_403_FORBIDDEN)
+# timezone.now().time() not in (quiz.from_time, quiz.to_time)
+        if request.user.role == 2 or (request.user.role == 3 and (quiz.occurring_date < timezone.now().date() or (quiz.occurring_date == timezone.now().date() and quiz.to_time < timezone.now().time()))):
+            access_answer = True
+        else:
+            access_answer = False
+
+        serializer = RetrieveQuestionModelSerializer(list(quiz.questions.all()), many=True, context={'send_answers': access_answer})
 
         return JsonResponse({
             'status':True,

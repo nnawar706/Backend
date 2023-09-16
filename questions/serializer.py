@@ -106,6 +106,11 @@ class AnswerModelSerializer (serializers.ModelSerializer):
         model = SubQuestionAnswer
         fields = '__all__'
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.context.get('send_answers'):
+            self.fields['status'] = serializers.BooleanField()
+
 
 class SubQuestionModelSerializer (serializers.ModelSerializer):
     answers = AnswerModelSerializer(many=True, read_only=True)
@@ -130,4 +135,8 @@ class RetrieveQuestionModelSerializer (serializers.ModelSerializer):
         model = Question
         fields = '__all__'
 
+    def __init__(self, *args, **kwargs):
+        context = kwargs.pop('context', {})
+        self.request = context.get('send_answers')
+        super().__init__(*args, **kwargs)
 
