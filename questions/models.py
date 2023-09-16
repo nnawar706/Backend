@@ -14,6 +14,9 @@ class Question(models.Model):
     detail          = models.CharField(max_length=300, null=True, blank=True)
     total           = models.FloatField()
 
+    def __str__(self):
+        return self.quiz.room.title + ' - ' + self.quiz.title + ' - ' + self.question_type.name
+
 
 class SubQuestion(models.Model):
     question        = models.ForeignKey(Question, on_delete=models.CASCADE)
@@ -21,8 +24,14 @@ class SubQuestion(models.Model):
     ques            = models.CharField(max_length=1000)
     sub_mark        = models.FloatField()
 
+    def __str__(self):
+        return self.question.question_type.name + ' - ' + self.ques[:15] + '...'
+
 
 class SubQuestionAnswer(models.Model):
     sub_question        = models.ForeignKey(SubQuestion, on_delete=models.CASCADE)
     answer              = models.CharField(max_length=1000)
     status              = models.BooleanField()
+
+    def __str__(self):
+        return self.sub_question.ques[:15] + '... - ' + self.answer[:10] + '...'
