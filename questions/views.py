@@ -20,4 +20,12 @@ class QuestionCreateView (APIView):
                 'error': serializer.errors
             }, status = status.HTTP_422_UNPROCESSABLE_ENTITY)
 
+        try:
+            question = serializer.create(serializer.validated_data)
+        except Exception as e:
+            return JsonResponse({
+                'status': False,
+                'error': str(e)
+            }, status = status.HTTP_500_INTERNAL_SERVER_ERROR)
+
         return JsonResponse({'status': True}, status = status.HTTP_201_CREATED)
