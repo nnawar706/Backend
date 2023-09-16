@@ -24,12 +24,12 @@ class QuizCreateView (APIView):
         if not serializer.is_valid():
             return JsonResponse({
                 'status': False,
-                'error': serializer.errors
+                'error': validation_error(serializer.errors)
             }, status = status.HTTP_422_UNPROCESSABLE_ENTITY)
 
         quiz = serializer.create(serializer.validated_data)
 
-        return JsonResponse({'status': False}, status = status.HTTP_201_CREATED)
+        return JsonResponse({'status': True}, status = status.HTTP_201_CREATED)
 
 
 def validation_error(errors):

@@ -9,7 +9,7 @@ class QuestionType(models.Model):
 
 
 class Question(models.Model):
-    quiz            = models.ForeignKey(Quiz, on_delete=models.CASCADE)
+    quiz            = models.ForeignKey(Quiz, on_delete=models.CASCADE, related_name='questions')
     question_type   = models.ForeignKey(QuestionType, on_delete=models.CASCADE)
     detail          = models.CharField(max_length=300, null=True, blank=True)
     total           = models.FloatField()
