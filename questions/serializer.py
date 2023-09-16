@@ -96,3 +96,38 @@ class QuestionCreateSerializer(serializers.Serializer):
                         )
 
                         ans.save()
+
+
+# model serializers
+
+class AnswerModelSerializer (serializers.ModelSerializer):
+
+    class Meta:
+        model = SubQuestionAnswer
+        fields = '__all__'
+
+
+class SubQuestionModelSerializer (serializers.ModelSerializer):
+    answers = AnswerModelSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = SubQuestion
+        fields = '__all__'
+
+
+class QuestionTypeModelSerializer (serializers.ModelSerializer):
+
+    class Meta:
+        model = QuestionType
+        fields = '__all__'
+
+
+class RetrieveQuestionModelSerializer (serializers.ModelSerializer):
+    question_type   = QuestionTypeModelSerializer(many=False, read_only=True)
+    sub_questions   = SubQuestionModelSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Question
+        fields = '__all__'
+
+

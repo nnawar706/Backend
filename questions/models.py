@@ -19,7 +19,7 @@ class Question(models.Model):
 
 
 class SubQuestion(models.Model):
-    question        = models.ForeignKey(Question, on_delete=models.CASCADE)
+    question        = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='sub_questions')
     image_url       = models.CharField(max_length=100, null=True, blank=True)
     ques            = models.CharField(max_length=1000)
     sub_mark        = models.FloatField()
@@ -29,7 +29,7 @@ class SubQuestion(models.Model):
 
 
 class SubQuestionAnswer(models.Model):
-    sub_question        = models.ForeignKey(SubQuestion, on_delete=models.CASCADE)
+    sub_question        = models.ForeignKey(SubQuestion, on_delete=models.CASCADE, related_name='answers')
     answer              = models.CharField(max_length=1000)
     status              = models.BooleanField()
 
