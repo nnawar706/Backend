@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Question</title>
+
+    <link rel="stylesheet"
+          href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+          crossorigin="anonymous">
+</head>
+
+<body>
+
+
+<hr>
+
+<p style="font-size: 15px">
+    Student ID: _____________________ Name: _______________________________________________
+</p>
+
+<hr>
+
+{%for item in data%}
+
+<p style="text-align: center; font-size: 15px">
+    <b><u>Section {{ forloop.counter }}: {{ item.question_type.name }}</u></b>
+</p>
+
+<p style="text-align: right;font-size: 15px">
+    Total: {{ item.total }}
+</p>
+
+<p style="font-size: 15px">
+    {{ item.detail }}
+</p>
+
+<br>
+
+{%for subItem in item.sub_questions%}
+
+<p style="font-size: 15px">
+    {{ forloop.counter }}.
+
+    {% if subItem.image_url %}
+    <img src="{{ subItem.image_url }}" height="200" width="200"><br>
+    {%endif%}
+
+    {{ subItem.ques }} - {{ subItem.sub_mark }}
+
+    <br>
+</p>
+
+{%for subSubItem in subItem.answers%}
+<p style="font-size: 12px">
+    {%if subSubItem.status == True%}
+        <b>{{ forloop.counter }}. {{ subSubItem.answer }}</b>
+    {%else%}
+        {{ forloop.counter }}. {{ subSubItem.answer }}
+    {%endif%}
+</p>
+{%endfor%}
+
+{%endfor%}
+{%endfor%}
+
+<br>
+<p style="text-align: center; font-size: 15px">
+    --------------------------------------- END ---------------------------------------
+</p>
+
+
+</body>
+</html>

@@ -115,7 +115,6 @@ class AnswerModelSerializer (serializers.ModelSerializer):
 
     def __init__(self, *args, **kwargs):
         context = kwargs.pop('context', {})
-        print(f"send_status_from_answer: {context.get('send_answers')}")
         send_status = context.get('send_answers')
         if send_status is False:
             del self.fields['status']
@@ -124,7 +123,6 @@ class AnswerModelSerializer (serializers.ModelSerializer):
 
 
 class SubQuestionModelSerializer (serializers.ModelSerializer):
-#     answers = AnswerModelSerializer(many=True)
 
     class Meta:
         model = SubQuestion
@@ -137,7 +135,6 @@ class SubQuestionModelSerializer (serializers.ModelSerializer):
 
     def __init__(self, *args, **kwargs):
         context = kwargs.pop('context', {})
-        print(f"send_status_from_sub_ques: {context.get('send_answers')}")
         self.send_status = context.get('send_answers')
         super().__init__(*args, **kwargs)
 
@@ -151,7 +148,6 @@ class QuestionTypeModelSerializer (serializers.ModelSerializer):
 
 class RetrieveQuestionModelSerializer (serializers.ModelSerializer):
     question_type   = QuestionTypeModelSerializer(many=False, read_only=True)
-#     sub_questions   = SubQuestionModelSerializer(many=True, context={'send_answers': self.context.get('send_answers')})
 
     class Meta:
         model = Question
@@ -165,7 +161,6 @@ class RetrieveQuestionModelSerializer (serializers.ModelSerializer):
 
     def __init__(self, *args, **kwargs):
         context = kwargs.pop('context', {})
-        
         self.send_status = context.get('send_answers')
         super().__init__(*args, **kwargs)
 
