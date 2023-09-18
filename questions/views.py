@@ -56,7 +56,7 @@ class QuestionView (APIView):
                 'status': False,
                 'error': 'You are not allowed to access this before ' + str(quiz.occurring_date.strftime('%d-%m-%Y')) + ' ' + str(quiz.from_time.strftime('%H:%M')) + '.'
             }, status=status.HTTP_403_FORBIDDEN)
-# timezone.now().time() not in (quiz.from_time, quiz.to_time)
+
         if request.user.role == 2 or (request.user.role == 3 and (quiz.occurring_date < timezone.now().date() or (quiz.occurring_date == timezone.now().date() and quiz.to_time < timezone.now().time()))):
             access_answer = True
         else:

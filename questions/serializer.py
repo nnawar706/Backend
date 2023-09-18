@@ -100,6 +100,13 @@ class QuestionCreateSerializer(serializers.Serializer):
 
 # model serializers
 
+class AnswerModelSerializerWithStatus (serializers.ModelSerializer):
+
+    class Meta:
+        model = SubQuestionAnswer
+        fields = '__all__'
+
+
 class AnswerModelSerializer (serializers.ModelSerializer):
 
     class Meta:
@@ -107,17 +114,32 @@ class AnswerModelSerializer (serializers.ModelSerializer):
         fields = '__all__'
 
     def __init__(self, *args, **kwargs):
+        context = kwargs.pop('context', {})
+        print(f"send_status_from_answer: {context.get('send_answers')}")
+        send_status = context.get('send_answers')
+        if send_status is False:
+            del self.fields['status']
         super().__init__(*args, **kwargs)
-        if self.context.get('send_answers'):
-            self.fields['status'] = serializers.BooleanField()
+
 
 
 class SubQuestionModelSerializer (serializers.ModelSerializer):
-    answers = AnswerModelSerializer(many=True, read_only=True)
+#     answers = AnswerModelSerializer(many=True)
 
     class Meta:
         model = SubQuestion
         fields = '__all__'
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data['answers'] = AnswerModelSerializer(instance.answers.all(), many=True, context=self.context).data
+        return data
+
+    def __init__(self, *args, **kwargs):
+        context = kwargs.pop('context', {})
+        print(f"send_status_from_sub_ques: {context.get('send_answers')}")
+        self.send_status = context.get('send_answers')
+        super().__init__(*args, **kwargs)
 
 
 class QuestionTypeModelSerializer (serializers.ModelSerializer):
@@ -129,14 +151,21 @@ class QuestionTypeModelSerializer (serializers.ModelSerializer):
 
 class RetrieveQuestionModelSerializer (serializers.ModelSerializer):
     question_type   = QuestionTypeModelSerializer(many=False, read_only=True)
-    sub_questions   = SubQuestionModelSerializer(many=True, read_only=True)
+#     sub_questions   = SubQuestionModelSerializer(many=True, context={'send_answers': self.context.get('send_answers')})
 
     class Meta:
         model = Question
         fields = '__all__'
 
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data['sub_questions'] = SubQuestionModelSerializer(instance.sub_questions.all(), many=True, context=self.context).data
+        return data
+
+
     def __init__(self, *args, **kwargs):
         context = kwargs.pop('context', {})
-        self.request = context.get('send_answers')
+        
+        self.send_status = context.get('send_answers')
         super().__init__(*args, **kwargs)
 
