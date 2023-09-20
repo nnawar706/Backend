@@ -15,7 +15,7 @@ class ExamRoomsView(APIView):
         else:
             data = ExamRoom.objects.filter(user = request.user).order_by('-created_at')
 
-        serializer = ExamRoomSerializer(data, many=True)
+        serializer = AllExamRoomSerializer(data, many=True)
 
         return JsonResponse({
             'status': True,

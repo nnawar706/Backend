@@ -62,7 +62,7 @@ class QuizUpdateView (APIView):
                 'error': validation_error(serializer.errors)
             }, status = status.HTTP_422_UNPROCESSABLE_ENTITY)
 
-#         quiz = serializer.update(instance = quiz, data = serializer.validated_data)
+        quiz = serializer.update(instance = quiz, data = serializer.validated_data)
 
         return JsonResponse({
             'status': True,

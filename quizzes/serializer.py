@@ -86,3 +86,10 @@ class QuizUpdateSerializer (serializers.ModelSerializer):
         instance.from_time = data.get('from_time')
         instance.save()
         return instance
+
+
+class QuizSerializer (serializers.ModelSerializer):
+
+    class Meta:
+        model = Quiz
+        fields = '__all__'
