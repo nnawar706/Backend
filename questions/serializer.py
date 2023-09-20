@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.conf import settings
 from django.db import transaction
-from .models import QuestionType, Question, SubQuestion, SubQuestionAnswer
+from .models import *
 from quizzes.models import Quiz
 from django.utils import timezone
 
@@ -98,6 +98,42 @@ class QuestionCreateSerializer(serializers.Serializer):
                         ans.save()
 
 
+
+class AnswerSubQuestionsSerializer(serializers.Serializer):
+    answers = serializers.ListField()
+
+    def __init__(self, *args, **kwargs):
+        context = kwargs.pop('context', {})
+        self.request = context.get('request')
+        self.sq = context.get('sq')
+        super().__init__(*args, **kwargs)
+
+    def validate (self, data):
+        existing_answer = self.sq.marks.filter(student=self.request.user).first()
+
+        if existing_answer:
+            raise serializers.ValidationError('You have already submitted answer for this question.')
+
+        return data
+
+    def store_answer (self, data):
+        answers = self.sq.answers.all()
+        given_answers = data['answers']
+        correct_answers = [answer.id for answer in answers if answer.status]
+
+        correct_answers.sort()
+        given_answers.sort()
+
+        sq_mark = SubQuestionMark(
+            mark = self.sq.sub_mark if correct_answers == given_answers else 0,
+            sub_question   = self.sq,
+            student        = self.request.user
+        )
+        sq_mark.save()
+
+        return data
+
+
 # model serializers
 
 class AnswerModelSerializerWithStatus (serializers.ModelSerializer):
@@ -163,4 +199,3 @@ class RetrieveQuestionModelSerializer (serializers.ModelSerializer):
         context = kwargs.pop('context', {})
         self.send_status = context.get('send_answers')
         super().__init__(*args, **kwargs)
-

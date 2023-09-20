@@ -1,5 +1,6 @@
 from django.db import models
 from quizzes.models import Quiz
+from django.conf import settings
 
 class QuestionType(models.Model):
     name           = models.CharField(max_length=50, unique = True)
@@ -35,3 +36,12 @@ class SubQuestionAnswer(models.Model):
 
     def __str__(self):
         return self.sub_question.ques[:15] + '... - ' + self.answer[:10] + '...'
+
+
+class SubQuestionMark (models.Model):
+    student             = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='sq_marks')
+    sub_question        = models.ForeignKey(SubQuestion, on_delete=models.CASCADE, related_name='marks')
+    mark                = models.FloatField()
+
+    def __str__(self):
+        return self.student.name + ' - ' + self.mark

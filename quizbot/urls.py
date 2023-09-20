@@ -28,5 +28,5 @@ urlpatterns = [
     path('api/v1/users/', include('users.urls')),
     path('api/v1/rooms/', include('rooms.urls')),
     path('api/v1/quizzes/', include('quizzes.urls')),
-    path('api/v1/quiz-questions/', include('questions.urls'))
+    path('api/v1/quiz_questions/', include('questions.urls'))
 ]

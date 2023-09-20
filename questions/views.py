@@ -3,6 +3,7 @@ from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework import permissions
 from quizzes.models import Quiz
+from .models import SubQuestion
 from .utils import render_to_pdf
 from django.utils import timezone
 from .serializer import *
@@ -103,3 +104,42 @@ class QuestionPdfView (APIView):
         serializer = RetrieveQuestionModelSerializer(list(quiz.questions.all()), many=True, context={'send_answers': True})
 
         return render_to_pdf ('question.html', {'data': serializer.data})
+
+
+class AnswerSubQuestionsView (APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post (self, request, pk):
+        try:
+            sq = SubQuestion.objects.get(pk=pk)
+        except SubQuestion.DoesNotExist:
+            return JsonResponse({
+                'status': False,
+                'error': 'Question not found'
+            }, status=status.HTTP_404_NOT_FOUND)
+
+#         if sq.question.quiz.occurring_date != timezone.now().date():
+#             return JsonResponse({
+#                 'status': False,
+#                 'error': 'You are not allowed to perform this action.'
+#             }, status=status.HTTP_403_FORBIDDEN)
+
+        data = request.data
+        serializer = AnswerSubQuestionsSerializer(data = data, context = {'request':request, 'sq': sq})
+
+        if not serializer.is_valid():
+            return JsonResponse({
+                'status': False,
+                'error': validation_error(serializer.errors)
+            }, status = status.HTTP_422_UNPROCESSABLE_ENTITY)
+
+        data = serializer.store_answer(serializer.validated_data)
+
+        return JsonResponse({
+            'status':True,
+        }, status=status.HTTP_201_CREATED)
+
+
+def validation_error(errors):
+    error_field = next(iter(errors))
+    return errors[error_field][0]

@@ -19,8 +19,8 @@ class Quiz (models.Model):
 
 
 class QuizMark (models.Model):
-    quiz          = models.ForeignKey(Quiz, on_delete=models.CASCADE, related_name='quiz')
-    student       = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='examinee')
+    quiz          = models.ForeignKey(Quiz, on_delete=models.CASCADE, related_name='quiz_mark')
+    student       = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='student_mark')
     obtained_mark = models.FloatField()
 
     class Meta:
