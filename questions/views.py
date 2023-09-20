@@ -107,7 +107,7 @@ class QuestionPdfView (APIView):
 
 
 class AnswerSubQuestionsView (APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsStudent]
 
     def post (self, request, pk):
         try:
@@ -118,11 +118,11 @@ class AnswerSubQuestionsView (APIView):
                 'error': 'Question not found'
             }, status=status.HTTP_404_NOT_FOUND)
 
-#         if sq.question.quiz.occurring_date != timezone.now().date():
-#             return JsonResponse({
-#                 'status': False,
-#                 'error': 'You are not allowed to perform this action.'
-#             }, status=status.HTTP_403_FORBIDDEN)
+        if sq.question.quiz.occurring_date != timezone.now().date() or timezone.now().time() not in (sq.question.quiz.from_time, sq.question.quiz.to_time):
+            return JsonResponse({
+                'status': False,
+                'error': 'You are not allowed to perform this action.'
+            }, status=status.HTTP_403_FORBIDDEN)
 
         data = request.data
         serializer = AnswerSubQuestionsSerializer(data = data, context = {'request':request, 'sq': sq})
@@ -138,6 +138,35 @@ class AnswerSubQuestionsView (APIView):
         return JsonResponse({
             'status':True,
         }, status=status.HTTP_201_CREATED)
+
+
+class QuizObtainedMarksView (APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get (self, request, quiz_id):
+        try:
+            quiz = Quiz.objects.get(pk=quiz_id)
+        except Quiz.DoesNotExist:
+            return JsonResponse({
+                'status': False,
+                'error': 'Quiz not found'
+            }, status=status.HTTP_404_NOT_FOUND)
+
+        if request.user.role == 2 and quiz.room.user != request.user:
+            return JsonResponse({
+                'status': False,
+                'error': 'You are not allowed to access this data.'
+            }, status=status.HTTP_403_FORBIDDEN)
+
+        if request.user.role == 3 and not quiz.room.students.filter(id=request.user.id).exists():
+            return JsonResponse({
+                'status': False,
+                'error': 'You are not allowed to access this data.'
+            }, status=status.HTTP_403_FORBIDDEN)
+
+        return JsonResponse({
+            'status': True,
+        }, status=status.HTTP_200_OK)
 
 
 def validation_error(errors):

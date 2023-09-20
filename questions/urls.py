@@ -6,5 +6,5 @@ urlpatterns = [
     path("<int:quiz_id>", QuestionView.as_view()),
     path("pdf/<int:quiz_id>", QuestionPdfView.as_view()),
     path("answer/<int:pk>", AnswerSubQuestionsView.as_view()),
-#     path("join_room", JoinExamRoomView.as_view()),
+    path("marks/<int:quiz_id>", QuizObtainedMarksView.as_view()),
 ]
