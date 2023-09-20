@@ -12,6 +12,7 @@ class Quiz (models.Model):
     created_at      = models.DateTimeField(auto_now_add=True)
 
     class Meta:
+        db_table        = 'quizzes'
         unique_together = ('room', 'title')
 
     def __str__(self):
@@ -24,6 +25,7 @@ class QuizMark (models.Model):
     obtained_mark = models.FloatField()
 
     class Meta:
+        db_table        = 'quiz_marks'
         unique_together = ('quiz', 'student')
 
     def __str__(self):

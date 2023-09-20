@@ -3,7 +3,8 @@ from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework import permissions
 from quizzes.models import Quiz
-from .models import SubQuestion
+from django.db.models import Sum
+from .models import SubQuestion, SubQuestionMark
 from .utils import render_to_pdf
 from django.utils import timezone
 from .serializer import *
@@ -164,8 +165,11 @@ class QuizObtainedMarksView (APIView):
                 'error': 'You are not allowed to access this data.'
             }, status=status.HTTP_403_FORBIDDEN)
 
+        data = SubQuestionMark.objects.values('student__id','student__email').annotate(total_marks=Sum('mark'))
+
         return JsonResponse({
             'status': True,
+            'data': list(data)
         }, status=status.HTTP_200_OK)
 
 

@@ -12,6 +12,7 @@ class ExamRoom(models.Model):
     students    = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='student', through='ExamRoomHasStudents')
 
     class Meta:
+        db_table = 'rooms'
         unique_together = ('user', 'title')
 
     def __str__(self):
@@ -23,6 +24,7 @@ class ExamRoomHasStudents(models.Model):
     created_at  = models.DateTimeField(auto_now_add=True)
 
     class Meta:
+        db_table        = 'room_has_students'
         unique_together = ('room', 'student')
 
     def __str__(self):
