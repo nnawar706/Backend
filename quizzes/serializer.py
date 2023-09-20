@@ -33,7 +33,7 @@ class QuizCreateSerializer (serializers.ModelSerializer):
         if data['occurring_date'] <= timezone.now().date():
             raise serializers.ValidationError('Quiz date must be greater than today.')
 
-        if data['to_time'] < data['from_time']:
+        if data['to_time'] <= data['from_time']:
             raise serializers.ValidationError('End time should be greater than start time.')
 
         if data['total_marks'] < 10:
@@ -54,3 +54,35 @@ class QuizCreateSerializer (serializers.ModelSerializer):
         quiz.save()
 
         return quiz
+
+
+class QuizUpdateSerializer (serializers.ModelSerializer):
+
+    class Meta:
+        model  = Quiz
+        exclude = ['room']
+
+    def validate (self, data):
+        instance = self.instance
+
+        if self.instance.title != data['title']:
+            existing_quiz = Quiz.objects.filter(room=self.instance.room, title=data['title']).first()
+
+            if existing_quiz:
+                raise serializers.ValidationError('A quiz with the same title already exists.')
+
+        if self.instance.questions and instance.total_marks != data['total_marks']:
+            raise serializers.ValidationError('Cannot change total marks after creating questions.')
+
+        if data['to_time'] <= data['from_time']:
+            raise serializers.ValidationError('End time should be greater than start time.')
+
+        return data
+
+    def update (self, instance, data):
+        instance.title = data.get('title')
+        instance.occurring_date = data.get('occurring_date')
+        instance.from_time = data.get('from_time')
+        instance.from_time = data.get('from_time')
+        instance.save()
+        return instance

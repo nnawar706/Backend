@@ -119,22 +119,23 @@ class SendJoiningInvitationView(APIView):
     def post (self, request, pk):
         try:
             room = ExamRoom.objects.get(pk=pk)
-
-            if room.user != request.user:
-                return JsonResponse({
-                    'status': False,
-                    'error': 'You are not allowed to perform this task.'
-                }, status = status.HTTP_403_FORBIDDEN)
-            if not room.status:
-                return JsonResponse({
-                    'status': False,
-                    'error': 'Cannot invite students to an archived exam room.'
-                }, status = status.HTTP_400_BAD_REQUEST)
         except ExamRoom.DoesNotExist:
             return JsonResponse({
                 'status': False,
                 'error': 'Room does not exist.'
             }, status = status.HTTP_404_NOT_FOUND)
+
+        if room.user != request.user:
+            return JsonResponse({
+                'status': False,
+                'error': 'You are not allowed to perform this task.'
+            }, status = status.HTTP_403_FORBIDDEN)
+
+        if not room.status:
+            return JsonResponse({
+                'status': False,
+                'error': 'Cannot invite students to an archived exam room.'
+            }, status = status.HTTP_400_BAD_REQUEST)
 
         data = request.data
 
