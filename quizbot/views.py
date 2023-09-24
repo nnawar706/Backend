@@ -37,7 +37,7 @@ class LogoutView (APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def post (self, request):
-#         try:
+        try:
             refresh_token = request.data['refresh_token']
             token = RefreshToken(token=refresh_token)
             token.blacklist()
@@ -45,8 +45,8 @@ class LogoutView (APIView):
             return Response({
                 'status': True
             })
-#         except Exception as e:
-#             return Response({
-#                 'status': False,
-#                 'error': 'Unauthorized user.'
-#             }, status = status.HTTP_401_UNAUTHORIZED)
+        except Exception as e:
+            return Response({
+                'status': False,
+                'error': 'Token is blacklisted.'
+            }, status = status.HTTP_403_FORBIDDEN)
