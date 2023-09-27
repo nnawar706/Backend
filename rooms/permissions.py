@@ -7,4 +7,7 @@ class IsTeacher(permissions.BasePermission):
 
 class IsStudent(permissions.BasePermission):
     def has_permission(self, request, view):
-        return request.user.role == 3
+#         if request.method == 'GET':
+            return request.user.role == 3
+#         else:
+#             return False

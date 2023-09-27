@@ -7,13 +7,17 @@ from .serializer import *
 from .models import ExamRoom
 
 class ExamRoomsView(APIView):
-    permission_classes = [permissions.IsAuthenticated, IsTeacher]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
-        if request.query_params:
-            data = ExamRoom.objects.filter(user = request.user, **request.query_params.dict()).order_by('-created_at')
-        else:
-            data = ExamRoom.objects.filter(user = request.user).order_by('-created_at')
+        if request.user.role == 2:
+            if request.query_params:
+                data = ExamRoom.objects.filter(user = request.user, **request.query_params.dict()).order_by('-created_at')
+            else:
+                data = ExamRoom.objects.filter(user = request.user).order_by('-created_at')
+
+        elif request.user.role == 3:
+            data = request.user.rooms.all()
 
         serializer = AllExamRoomSerializer(data, many=True)
 
@@ -23,6 +27,11 @@ class ExamRoomsView(APIView):
         }, status = status.HTTP_204_NO_CONTENT if len(serializer.data) == 0 else status.HTTP_200_OK)
 
     def post(self, request):
+        if request.user.role == 3:
+            return JsonResponse({
+                'detail': 'You do not have permission to perform this action.'
+            }, status = status.HTTP_403_FORBIDDEN)
+
         data = request.data
 
         serializer = ExamRoomCreateSerializer(data = data, context={'request': request})
