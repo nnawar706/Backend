@@ -9,7 +9,7 @@ class ExamRoom(models.Model):
     secret      = models.CharField(max_length = 255)
     status      = models.BooleanField(default=True)
     created_at  = models.DateTimeField(auto_now_add=True)
-    students    = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='student', through='ExamRoomHasStudents')
+    students    = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='joined_rooms', through='ExamRoomHasStudents')
 
     class Meta:
         db_table = 'rooms'

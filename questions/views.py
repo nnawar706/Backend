@@ -48,10 +48,10 @@ class QuestionView (APIView):
                 'error': 'Quiz not found'
             }, status=status.HTTP_404_NOT_FOUND)
 
-        if quiz.room.user != request.user:
+        if request.user.role == 2 and quiz.room.user != request.user:
             return JsonResponse({
                 'status': False,
-                'error': 'You are not allowed to access this data.'
+                'error': 'You do not have permission to perform this action.'
             }, status=status.HTTP_403_FORBIDDEN)
 
         if request.user.role == 3 and (quiz.occurring_date > timezone.now().date() or (quiz.occurring_date == timezone.now().date() and timezone.now().time() < quiz.from_time)):

@@ -4,7 +4,7 @@ from rest_framework import status
 from rest_framework import permissions
 from .permissions import *
 from .serializer import *
-from .models import ExamRoom
+from .models import ExamRoom, ExamRoomHasStudents
 
 class ExamRoomsView(APIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -17,7 +17,7 @@ class ExamRoomsView(APIView):
                 data = ExamRoom.objects.filter(user = request.user).order_by('-created_at')
 
         elif request.user.role == 3:
-            data = request.user.rooms.all()
+            data = request.user.joined_rooms.all()
 
         serializer = AllExamRoomSerializer(data, many=True)
 
