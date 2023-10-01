@@ -50,17 +50,17 @@ class ExamRoomsView(APIView):
 
 
 class RetrieveExamRoomView(APIView):
-    permission_classes = [permissions.IsAuthenticated, IsTeacher]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, pk):
         try:
             data = ExamRoom.objects.get(pk=pk)
 
-            if data.user != request.user:
-                return JsonResponse({
-                    'status': False,
-                    'error': 'You are not allowed to access the data.'
-                }, status = status.HTTP_403_FORBIDDEN)
+#             if data.user != request.user:
+#                 return JsonResponse({
+#                     'status': False,
+#                     'error': 'You are not allowed to access the data.'
+#                 }, status = status.HTTP_403_FORBIDDEN)
         except ExamRoom.DoesNotExist:
             return JsonResponse({
                 'status': False,
