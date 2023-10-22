@@ -10,6 +10,7 @@ class ExamRoomsView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
+        data = []
         if request.user.role == 2:
             if request.query_params:
                 data = ExamRoom.objects.filter(user = request.user, **request.query_params.dict()).order_by('-created_at')
