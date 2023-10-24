@@ -4,6 +4,7 @@ from rest_framework import status
 from rest_framework import permissions
 from rooms.models import ExamRoom
 from django.utils import timezone
+from django.db.models import Count
 from .permissions import *
 from .serializer import *
 from .models import Quiz
@@ -32,6 +33,33 @@ class QuizCreateView (APIView):
         quiz = serializer.create(serializer.validated_data)
 
         return JsonResponse({'status': True}, status = status.HTTP_201_CREATED)
+
+class QuizView (APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get (self, request, room_id):
+        try:
+            room = ExamRoom.objects.get(pk=room_id)
+        except ExamRoom.DoesNotExist:
+            return JsonResponse({
+                'status': False,
+                'error' : 'Room not found'
+            }, status=status.HTTP_404_NOT_FOUND)
+        
+        if room.user != request.user:
+            return JsonResponse({
+                'status': False,
+                'error' : 'You are not allowed to access this data.'
+            }, status=status.HTTP_403_FORBIDDEN)
+        
+        data = room.quizzes.annotate(question_count=Count('questions')).order_by('-occurring_date')
+
+        serializer = QuizSerializer(data, many=True)
+
+        return JsonResponse({
+            'status': True,
+            'data': serializer.data
+        }, status = status.HTTP_204_NO_CONTENT if len(serializer.data) == 0 else status.HTTP_200_OK)
 
 
 class QuizUpdateView (APIView):
