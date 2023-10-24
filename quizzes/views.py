@@ -54,7 +54,7 @@ class QuizView (APIView):
         
         data = room.quizzes.annotate(question_count=Count('questions')).order_by('-occurring_date')
 
-        serializer = QuizSerializer(data, many=True)
+        serializer = QuizzesSerializer(data, many=True)
 
         return JsonResponse({
             'status': True,

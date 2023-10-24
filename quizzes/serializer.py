@@ -89,6 +89,12 @@ class QuizUpdateSerializer (serializers.ModelSerializer):
 
 
 class QuizSerializer (serializers.ModelSerializer):
+    
+    class Meta:
+        model = Quiz
+        fields = '__all__'
+
+class QuizzesSerializer (serializers.ModelSerializer):
     question_count = serializers.IntegerField()
     
     class Meta:
