@@ -4,7 +4,8 @@ from rest_framework import status
 from rest_framework import permissions
 from rooms.models import ExamRoom
 from django.utils import timezone
-from django.db.models import Count
+from django.db.models import Count, Sum
+from questions.models import SubQuestionMark
 from .permissions import *
 from .serializer import *
 from .models import Quiz
@@ -109,12 +110,24 @@ class QuizMarksView(APIView):
                 'error': 'Quiz does not exist.'
             }, status = status.HTTP_404_NOT_FOUND)
 
-        if quiz.room.user.role == 2 and quiz.room.user != request.user:
+        if request.user.role == 2 and quiz.room.user != request.user:
             return JsonResponse({
                 'status': False,
                 'error': 'You are not authorized to perform this action.'
             }, status = status.HTTP_403_FORBIDDEN)
 
+        mark_sheet = SubQuestionMark.objects.filter(
+                         sub_question__question__quiz_id=quiz.id
+                     ).values('student').annotate(
+                         total_marks=Sum('mark')
+                     ).order_by('student')
+        print(mark_sheet)
+        serializer = MarkSheetSerializer(mark_sheet, many=True)
+
+        return JsonResponse({
+            'status': True,
+            'data': serializer.data
+        }, status = status.HTTP_200_OK)
 
 def validation_error(errors):
     error_field = next(iter(errors))

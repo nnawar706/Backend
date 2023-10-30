@@ -2,6 +2,8 @@ from rest_framework import serializers
 from django.conf import settings
 from django.utils import timezone
 from rooms.models import ExamRoom
+from questions.models import SubQuestionMark
+from users.serializer import AccessUserSerializer
 from .models import Quiz
 
 
@@ -100,3 +102,12 @@ class QuizzesSerializer (serializers.ModelSerializer):
     class Meta:
         model = Quiz
         fields = '__all__'
+
+class MarkSheetSerializer(serializers.Serializer):
+    user = AccessUserSerializer(source = 'student__user', read_only = True)
+    student = serializers.IntegerField()
+    total_marks = serializers.FloatField()
+
+    class Meta:
+        model = SubQuestionMark
+        fields = ('student', 'total_marks', 'user')
