@@ -124,12 +124,23 @@ class AnswerSubQuestionsSerializer(serializers.Serializer):
         correct_answers.sort()
         given_answers.sort()
 
-        sq_mark = SubQuestionMark(
-            mark = self.sq.sub_mark if correct_answers == given_answers else 0,
-            sub_question   = self.sq,
-            student        = self.request.user
-        )
-        sq_mark.save()
+        with transaction.atomic():
+
+            sq_mark = SubQuestionMark(
+                mark = self.sq.sub_mark if correct_answers == given_answers else 0,
+                sub_question   = self.sq,
+                student        = self.request.user
+            )
+
+            sq_mark.save()
+
+            for given_answer in given_answers:
+                sq_student_answer = SubQuestionStudentAnswer(
+                    sub_question_student_mark = sq_mark,
+                    answer_id                 = given_answer
+                )
+
+                sq_student_answer.save()
 
         return data
 

@@ -10,7 +10,6 @@ from django.utils import timezone
 from .serializer import *
 from .permissions import *
 
-
 class QuestionCreateView (APIView):
     permission_classes = [permissions.IsAuthenticated, IsTeacher]
 
@@ -119,11 +118,11 @@ class AnswerSubQuestionsView (APIView):
                 'error': 'Question not found'
             }, status=status.HTTP_404_NOT_FOUND)
 
-        if sq.question.quiz.occurring_date != timezone.now().date() or timezone.now().time() not in (sq.question.quiz.from_time, sq.question.quiz.to_time):
-            return JsonResponse({
-                'status': False,
-                'error': 'You are not allowed to perform this action.'
-            }, status=status.HTTP_403_FORBIDDEN)
+#         if sq.question.quiz.occurring_date != timezone.now().date() or timezone.now().time() not in (sq.question.quiz.from_time, sq.question.quiz.to_time):
+#             return JsonResponse({
+#                 'status': False,
+#                 'error': 'You are not allowed to perform this action.'
+#             }, status=status.HTTP_403_FORBIDDEN)
 
         data = request.data
         serializer = AnswerSubQuestionsSerializer(data = data, context = {'request':request, 'sq': sq})

@@ -60,3 +60,14 @@ class SubQuestionMark (models.Model):
 
     def __str__(self):
         return self.student.name + ' - ' + self.mark
+
+
+class SubQuestionStudentAnswer (models.Model):
+    sub_question_student_mark        = models.ForeignKey(SubQuestionMark, on_delete=models.CASCADE, related_name='student_answers')
+    answer                             = models.ForeignKey(SubQuestionAnswer, on_delete=models.CASCADE, related_name='student_answers')
+
+    class Meta:
+        db_table = 'sub_question_student_answers'
+
+    def __str__(self):
+        return self.sub_question_student_answer.sub_question.id + ' - ' + self.answer
