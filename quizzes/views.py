@@ -97,6 +97,24 @@ class QuizUpdateView (APIView):
         }, status = status.HTTP_200_OK)
 
 
+class QuizMarksView(APIView):
+    permissions = [permissions.IsAuthenticated]
+
+    def get (self, request, pk):
+        try:
+            quiz = Quiz.objects.get(pk=pk)
+        except ExamRoom.DoesNotExist:
+            return JsonResponse({
+                'status': False,
+                'error': 'Quiz does not exist.'
+            }, status = status.HTTP_404_NOT_FOUND)
+
+        if quiz.room.user.role == 2 and quiz.room.user != request.user:
+            return JsonResponse({
+                'status': False,
+                'error': 'You are not authorized to perform this action.'
+            }, status = status.HTTP_403_FORBIDDEN)
+
 
 def validation_error(errors):
     error_field = next(iter(errors))
