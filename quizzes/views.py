@@ -121,13 +121,47 @@ class QuizMarksView(APIView):
                      ).values('student').annotate(
                          total_marks=Sum('mark')
                      ).order_by('student')
-        print(mark_sheet)
+
         serializer = MarkSheetSerializer(mark_sheet, many=True)
 
         return JsonResponse({
             'status': True,
             'data': serializer.data
         }, status = status.HTTP_200_OK)
+
+
+class QuizMarksPublishView(APIView):
+    permissions = [permissions.IsAuthenticated, IsTeacher]
+
+    def post(self, request, pk):
+        try:
+            quiz = Quiz.objects.get(pk=pk)
+        except Quiz.DoesNotExist:
+            return JsonResponse({
+                'status': False,
+                'error': 'Quiz does not exist.'
+            }, status = status.HTTP_404_NOT_FOUND)
+
+        if request.user.role == 2 and quiz.room.user != request.user:
+            return JsonResponse({
+                'status': False,
+                'error': 'You are not authorized to perform this action.'
+            }, status = status.HTTP_403_FORBIDDEN)
+
+        if quiz.quiz_mark.exists():
+            return JsonResponse({
+                'status': False,
+                'error': 'Quiz marks have already been published.'
+            }, status = status.HTTP_403_FORBIDDEN)
+
+        serializer = QuizMarkPublishSerializer(context={'quiz': quiz})
+
+        serializer.publish_mark()
+
+        return JsonResponse({
+            'status': True,
+        }, status = status.HTTP_201_CREATED)
+
 
 def validation_error(errors):
     error_field = next(iter(errors))

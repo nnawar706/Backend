@@ -111,3 +111,20 @@ class MarkSheetSerializer(serializers.Serializer):
     class Meta:
         model = SubQuestionMark
         fields = ('student', 'total_marks', 'user')
+
+
+class QuizMarkPublishSerializer(serializers.ModelSerializer):
+    def __init__(self, *args, **kwargs):
+        context = kwargs.pop('context', {})
+        self.request = context.get('request')
+        self.quiz = context.get('quiz')
+        super().__init__(*args, **kwargs)
+
+    def publish_mark (self):
+        quiz = self.quiz
+
+        quiz_marks = SubQuestionMark.objects.filter(
+                      sub_question__question__quiz_id=quiz.id
+                  ).values('student').annotate(
+                      total_marks=Sum('mark')
+                  ).order_by('student')
